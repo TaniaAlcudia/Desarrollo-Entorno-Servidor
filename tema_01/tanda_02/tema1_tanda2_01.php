@@ -46,6 +46,11 @@
         return $txtCif;
     }
 
+    function cifradoPorSustitucion($txtIni, $despl)
+    {
+        
+    }
+
     $botonPulsado = false;
     $txtValidate = false;
     $despValidate = false;
@@ -111,7 +116,5 @@
         }
     ?>
 
-    
-    
 </body>
 </html>
