@@ -5,6 +5,7 @@
     define("DIR", "./ficheros_clave/");
     define("CHAR_Z", ord("Z"));
     define("CHAR_A", ord("A"));
+    define("ABC", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
     function cargarRadios()
     {
@@ -28,11 +29,9 @@
     function cifradoCesar($txtIni, $despl)
     {
         $txtCif = "";
-
         for ($i=0; $i < strlen($txtIni); $i++) 
         {
             $c = ord($txtIni[$i]);
-
             for ($j=0; $j < $despl; $j++)
             {
                 if ($c == CHAR_Z)
@@ -40,30 +39,54 @@
                 else
                 $c++;
             }
-
             $txtCif .= chr($c); 
         }
         return $txtCif;
     }
 
-    function cifradoPorSustitucion($txtIni, $despl)
+    function cifradoPorSustitucion($txtIni, $opcion)
     {
-        
+        $txtCif = "";
+        $tamanio = filesize(DIR.$opcion);
+        if ($tamanio <= 0)
+            $txtCif = "No se ha podico realizar el cifrado. El fichero esta vacio.";
+        else
+        {
+            $file = fopen(DIR.$opcion, "r");
+            $str = fread($file, $tamanio);
+            fclose($file);
+
+            for ($i = 0; $i < strlen($txtIni); $i++)
+            {
+                $pos = strrpos(ABC, $txtIni[$i]);
+                $txtCif .= substr($str, $pos, 1);  
+            }
+        }
+        return $txtCif;     
     }
 
-    $botonPulsado = false;
+    $botonCesarPulsado = false;
+    $botonSustPulsado = false;
     $txtValidate = false;
     $despValidate = false;
 
-    if (isset($_POST['cesar']) or isset($_POST['sust']))
+    if (isset($_POST['cesar']))
     {
-        $botonPulsado = true;
+        $botonCesarPulsado = true;
 
         if (!empty($_POST['txt']))
             $txtValidate = true;
 
         if (isset($_POST['desp']))
             $despValidate = true;
+    }
+
+    if (isset($_POST['sust']))
+    {
+        $botonSustPulsado = true;
+
+        if (!empty($_POST['txt']))
+            $txtValidate = true;
     }
     
     $txt = isset($_POST['txt']) ?  $_POST['txt'] : ''; 
@@ -75,11 +98,15 @@
     <title>Tanda 2</title>
 </head>
 <body>
-    <form action="tema2_tanda1_01.php" method="post">
+    <form action="tema1_tanda2_01.php" method="post">
           <table>
             <tr>
                 <td><label for="txt">Texto a cifrar</label></td>
                 <td><input type="text" name="txt" id="txt" value="<?php echo $txt ?>"><br></td>
+                <?php
+                    if ($botonCesarPulsado or $botonSustPulsado)
+                        echo !$txtValidate ? "<td style='color: red'>El campo texto esta vacío</td>" : "";
+                ?>
             </tr>
             <tr>
                 <td><label for="desp">Desplazamiento</label></td>
@@ -89,6 +116,10 @@
                     ?>
                 </td>
                 <td><input type="submit" value="CIFRADO CESAR" name="cesar"/></td>
+                <?php
+                    if ($botonCesarPulsado)
+                        echo !$despValidate ? "<td style='color: red'>Seleccionar opción de desplazamiento</td>" : "";
+                ?>
             </tr>
             <tr>
                 <td><label for="fich">Fichero de clave</label></td>
@@ -105,16 +136,18 @@
     </form>
     <?php
 
-        if ($botonPulsado)
+        if ($botonCesarPulsado)
         {
-            echo !$txtValidate ? "<p style='color: red'>El campo texto esta vacío</p>" : "<p>El campo de texto NO ESTA VACIO</p>";
-            echo !$despValidate ? "<p style='color: red'>Seleccionar opción de desplazamiento</p>" : "<p>Opción de desplazamiento seleccionada</p>";
-
             if ($txtValidate and $despValidate)
                 echo "<p>". cifradoCesar(strtoupper($_POST['txt']), $_POST['desp'])."</p>";
-
         }
-    ?>
 
+        if ($botonSustPulsado)
+        {
+            if ($txtValidate)
+            echo "<p>".cifradoPorSustitucion(strtoupper($_POST['txt']), $_POST['fich'])."</p>";
+        }
+
+    ?>
 </body>
 </html>
