@@ -39,22 +39,24 @@
     <title>Ejercicio 02</title>
 </head>
 <body>
-    <table>
-        <tr>
-            <td><p>Cuántas imágenes deseas ver?</p></td>
-            <td>
-                <select id="cantFotos">
-                <?php
-                    cargarCombo();
-                ?>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button>VER IMAGENES</button>
-            </td>
-        </tr>
-    </table>   
+    <form action="./php/eval_imag.php" method="post">
+        <table>
+            <tr>
+                <td><p>Cuántas imágenes deseas ver?</p></td>
+                <td>
+                    <select name="cantFotos">
+                    <?php
+                        cargarCombo();
+                    ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="btnVerImagenes" value="VER IMAGENES">
+                </td>
+            </tr>
+        </table>
+    </form>   
 </body>
 </html>
