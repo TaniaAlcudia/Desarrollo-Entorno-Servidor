@@ -21,7 +21,7 @@
         {
             foreach (EXTENSIONES as $ext) 
             { 
-                if ( is_file(DIR.$file) and strpos(strtolower($file), $ext) !== false)
+                if (is_file(DIR.$file) and strpos(strtolower($file), $ext) !== false)
                 {
                     $contImagenes++;
                     break;
