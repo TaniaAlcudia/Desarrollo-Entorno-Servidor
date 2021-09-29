@@ -3,16 +3,29 @@
 <?php
 
     define("FICH", "./bd/conversiones.txt");
-    define("EUROADOLAR", 1.16979);
-    define("DOLARAEURO", 0.854853);
+    define("FACTOR", leerFactor());
+
+    function leerFactor()
+    {
+        if (file_exists(FICH))
+        {
+            $file = fopen(FICH, "r");
+            $factor = fscanf($file, "%f")[0];
+            fclose($file);
+        }
+        else
+            $factor = 0;
+            
+        return $factor;
+    }
     
     function convertir($cant, $opcion)
     {
         if ($opcion == "euroAdolar")
-             return $cant * EUROADOLAR;
+             return $cant * FACTOR;
         else
-            return $cant * DOLARAEURO;
-    }
+            return $cant / FACTOR;
+    }   
 
     $botonPulsado = (isset($_POST['convertir']));
     
@@ -38,7 +51,7 @@
             <tr>
                 <td>
                     <label for="cantidad">Cantidad: </label>
-                    <input type="text" name="cantidad" id="cantidad" value="<?php echo $cant ?>">
+                    <input type="text" name="cantidad" id="cantidad" value="<?php echo $cant?>">
                 </td>
                 <?php
                     if ($botonPulsado)
