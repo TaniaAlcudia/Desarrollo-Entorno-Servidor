@@ -23,15 +23,20 @@
 
     function aniadirArticulo()
     {
-        
+        $file = fopen(FICH, "a");
+        fwrite($file, "\n".$_POST['nombre'].";".$_POST['precio']);
+        fclose($file);
     }
 
-    $totalCompra = $_GET['total'];
-
-    if (isset($_GET['aniadir'])
+    $totalCompra = isset($_GET['total']) ? $_GET['total'] : 0;
+    $error = false;
+    
+    if (isset($_GET['aniadir']))
     {
-        if (!empty($_GET['nombre']) and !empty($_GET['precio']) and is_numeric($_GET['precio']))
-            eniadirArticulo();
+        if (!empty($_POST['nombre']) and !empty($_POST['precio']) and is_numeric($_POST['precio']))
+            aniadirArticulo();
+        else
+            $error = true;
     }
 
 ?>
@@ -64,19 +69,25 @@
             mostarArticulos($totalCompra);
         ?>
     </table>
-    <p class="destacado">TOTAL: <?php echo $totalCompra?>€</p><br><br><br><br><br><br><br><br>
+    <p class="destacado">TOTAL: <?php echo $totalCompra?>€</p>
     <p class="destacado" id="aniadir">AÑADE ARTICULO</p>
-    <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
+    <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post" enctype="multipart/form-data">
         <table>
             <tr>
                 <td><label for="nombre">Nombre:</label></td>
                 <td><label>Precio(€):</label></td>
+                <td><label for="subir">Selecciona un archivo:</label></td>
             </tr>
             <tr>
                 <td><input type="text" name="nombre" id="nombre"></td>
                 <td><input type="text" name="precio" id="precio"></td>
+                <td><input type="file" name="subir" id="subir"></td>
                 <td><input type="submit" name="aniadir" id="aniadir" value="AÑADIR"></td>
             </tr>
+            <?php
+                if ($error)
+                    echo "<tr><td><p style='color: red'>Campo(s) invalido(s)</p></td></tr>";
+            ?>
         </table>
     </form>
 </body>
