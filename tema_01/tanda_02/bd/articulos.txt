@@ -1,5 +1,17 @@
 Tornillo TY200;0.15
 Arandela;0.03
 Bisagra HG209;1.34
-LLave Allen;0.6
-Garrote Vil;199.99
+LLave Allen;0.6;./bd/llaveAllen.txt
+tania;4.77
+Aketza;12.58;./bd/Aketzatxt
+Aketza;12.58;./bd/Aketzatxt
+dfgdfgdfg;9.99;./bd/dfgdfgdfgtxt
+dfgdfgdfg;9.99;./bd/dfgdfgdfgtxt
+dfgdfgdfg;9.99;./bd/dfgdfgdfgtxt
+sdf;7;./bd/sdftxt
+restarasadas;4;./bd/restarasadastxt
+restarasadas;4;./bd/restarasadastxt
+restarasadas;4;./bd/restarasadastxt
+restarasadas;4;./bd/restarasadastxt
+holas;6.66;./bd/holastxt
+holas;6.66;./bd/holastxt

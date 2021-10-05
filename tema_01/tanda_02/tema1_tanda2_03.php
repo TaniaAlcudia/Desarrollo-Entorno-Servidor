@@ -3,42 +3,68 @@
 <?php
 
     define("FICH", "./bd/articulos.txt");
+    define("URL_SUBIDA", "./bd/");
 
-    function mostarArticulos($totalCompra)
+    function cogerArticulos()
     {
+        $articulos = [];
         if (file_exists(FICH))
         {
+           
             $lineas = explode("\n", file_get_contents(FICH));
             foreach ($lineas as $linea)
             {
-               $articulos = explode(";", $linea);
-               $articulo = $articulos[0];
-               $precio = $articulos[1];
-               echo "<tr><td>".$articulo."</td>";
-               echo "<td>".$precio."</td>";
-               echo "<td><a href='?total=".(floatval($precio) + floatval($totalCompra))."'>Añadir unidad</a></td></tr>";
+               $articulos[] = explode(";", $linea);
             }
+            
         }
+        return $articulos;
+
     }
 
-    function aniadirArticulo()
+    function aniadirArticulo($nombre = "", $precio = "", $archivo = false)
     {
         $file = fopen(FICH, "a");
-        fwrite($file, "\n".$_POST['nombre'].";".$_POST['precio']);
+        if($archivo)
+            fwrite($file, "\n".$nombre.";".$precio.";".$archivo);
+        else
+            fwrite($file, "\n".$nombre.";".$precio);
         fclose($file);
     }
 
     $totalCompra = isset($_GET['total']) ? $_GET['total'] : 0;
+    $archivoSubida = isset($_FILES['subir']) ? $_FILES['subir'] : false;
     $error = false;
     
-    if (isset($_GET['aniadir']))
+    
+    if (isset($_POST['aniadir']))
     {
-        if (!empty($_POST['nombre']) and !empty($_POST['precio']) and is_numeric($_POST['precio']))
-            aniadirArticulo();
-        else
-            $error = true;
+        if (!empty($_POST['nombre']) and !empty($_POST['precio']) and is_numeric($_POST['precio'])){
+
+            if($archivoSubida){
+                if(isset($archivoSubida['size']) and $archivoSubida['size'] > 0) {
+                    if($archivoSubida['type'] == "text/plain"){
+                        $url = URL_SUBIDA.$_POST['nombre']."txt";
+                        $movido = move_uploaded_file($_FILES['subir']['tmp_name'], $url);
+                        if($movido)
+                            aniadirArticulo($_POST['nombre'],$_POST['precio'],$url);
+                        else
+                            $error = "El archivo no se pudo subir";
+                    }else 
+                        $error = "Por favor, vuesa merced se ve en la obligación para/con la pleitesia hacia el pueblo de brindar un manuscrito en texto plano";
+                } else {
+                    aniadirArticulo($_POST['nombre'],$_POST['precio']);
+                }
+            } else  {
+                aniadirArticulo($_POST['nombre'],$_POST['precio']);
+            }
+               
+          
+        }else
+            $error = "Campo(s) invalido(s)";
     }
 
+    $articulos = cogerArticulos();
 ?>
 <head>
     <meta charset="UTF-8">
@@ -66,7 +92,18 @@
     <p class="destacado">ELIGE TU PEDIDO</p>
     <table>
         <?php
-            mostarArticulos($totalCompra);
+
+            foreach ($articulos as $articulo) {
+                $nombre = $articulo[0];
+                $precio = $articulo[1];
+                echo "<tr><td>".$nombre."</td>";
+                echo "<td>".$precio."</td>";
+                echo "<td><a href='?total=".(floatval($precio) + floatval($totalCompra))."'>Añadir unidad</a></td>";
+                if(count($articulo) > 2)
+                    echo "<td><a href=".$articulo[2].">".$nombre.".txt</a></td>";
+
+                echo "</tr>";
+            }
         ?>
     </table>
     <p class="destacado">TOTAL: <?php echo $totalCompra?>€</p>
@@ -81,12 +118,12 @@
             <tr>
                 <td><input type="text" name="nombre" id="nombre"></td>
                 <td><input type="text" name="precio" id="precio"></td>
-                <td><input type="file" name="subir" id="subir"></td>
+                <td><input type="file" name="subir" id="subir" accept=".txt"></td>
                 <td><input type="submit" name="aniadir" id="aniadir" value="AÑADIR"></td>
             </tr>
             <?php
                 if ($error)
-                    echo "<tr><td><p style='color: red'>Campo(s) invalido(s)</p></td></tr>";
+                    echo "<tr><td><p style='color: red'>$error</p></td></tr>";
             ?>
         </table>
     </form>
